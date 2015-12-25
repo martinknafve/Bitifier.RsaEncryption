@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Bitifier.RsaEncryption
 {
-   public static class ArraySplitter
+   internal static class ArraySplitter
    { 
       public static List<T[]> Split<T>(this T[] source, int maxSize)
       {
