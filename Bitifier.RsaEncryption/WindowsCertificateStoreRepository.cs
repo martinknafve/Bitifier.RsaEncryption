@@ -13,9 +13,18 @@ namespace Bitifier.RsaEncryption
       {
          var store = new X509Store(name, location);
 
-         var items = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+         store.Open(OpenFlags.ReadOnly);
 
-         return items.Cast<X509Certificate2>().ToList();
+         try
+         {
+            var items = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+
+            return items.Cast<X509Certificate2>().ToList();
+         }
+         finally
+         {
+            store.Close();
+         }
       }
    }
 }
