@@ -134,6 +134,7 @@ namespace Bitifier.RsaEncryption.Tests
       }
 
       [Test]
+      [Description("Test that all lengths can be properly encrypted and decrypted, so that there's no issues handling splitting")]
       public void EncryptionShouldHandleDifferentPlainTextLengths()
       {
          var certificate = X509Certificate2Loader.Test2048AWithPrivateKey();
