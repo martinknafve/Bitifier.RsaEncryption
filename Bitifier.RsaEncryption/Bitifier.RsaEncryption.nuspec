@@ -6,6 +6,9 @@
     <authors>Martin Knafve</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Bitifier.RsaEncryption simplifies encryption of secrets using RSA and X509 certificates.</description>
+    <licenseUrl>https://github.com/martinknafve/Bitifier.RsaEncryption/blob/master/LICENSE</licenseUrl>
+    <language>en-US</language>
+    <projectUrl>https://github.com/martinknafve/Bitifier.RsaEncryption</projectUrl>
   </metadata>
   <files>
     <file src="bin\Release\Bitifier.RsaEncryption.dll" target="lib" />
