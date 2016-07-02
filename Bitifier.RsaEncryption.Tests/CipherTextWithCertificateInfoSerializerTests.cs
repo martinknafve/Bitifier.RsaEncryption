@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace Bitifier.RsaEncryption.Tests
@@ -64,7 +60,7 @@ namespace Bitifier.RsaEncryption.Tests
       {
          var serializer = new CipherTextWithCertificateInfoSerializer();
 
-         var exception = Assert.Throws<ArgumentException>(() => serializer.Deserialize("0::::"));
+         var exception = Assert.Throws<ArgumentException>(() => serializer.Deserialize("Bitifier.RsaEncryption:0::::"));
          Assert.AreEqual("serializedCipherTextWithCertificateInfo", exception.ParamName);
          Assert.That(exception.Message, Does.StartWith("The version 0 is not supported."));
       }
@@ -74,7 +70,7 @@ namespace Bitifier.RsaEncryption.Tests
       {
          var serializer = new CipherTextWithCertificateInfoSerializer();
 
-         var exception = Assert.Throws<ArgumentException>(() => serializer.Deserialize("1:InvalidStoreLocation:Root:ThumbPrint:Ciphertext"));
+         var exception = Assert.Throws<ArgumentException>(() => serializer.Deserialize("Bitifier.RsaEncryption:1:InvalidStoreLocation:Root:ThumbPrint:Ciphertext"));
          Assert.AreEqual("serializedCipherTextWithCertificateInfo", exception.ParamName);
          Assert.That(exception.Message, Does.StartWith("The store location InvalidStoreLocation is unknown."));
       }
@@ -83,7 +79,7 @@ namespace Bitifier.RsaEncryption.Tests
       public void DeserializingUnknownStoreNameShouldThrow()
       {
          var serializer = new CipherTextWithCertificateInfoSerializer();
-         var exception = Assert.Throws<ArgumentException>(() => serializer.Deserialize("1:CurrentUser:InvalidStoreName:ThumbPrint:Ciphertext"));
+         var exception = Assert.Throws<ArgumentException>(() => serializer.Deserialize("Bitifier.RsaEncryption:1:CurrentUser:InvalidStoreName:ThumbPrint:Ciphertext"));
          Assert.AreEqual("serializedCipherTextWithCertificateInfo", exception.ParamName);
          Assert.That(exception.Message, Does.StartWith("The store name InvalidStoreName is unknown"));
       }
@@ -92,12 +88,30 @@ namespace Bitifier.RsaEncryption.Tests
       public void DeserializingCorrectlyFormedVersion1ShouldSucceed()
       {
          var serializer = new CipherTextWithCertificateInfoSerializer();
-         var result = serializer.Deserialize("1:CurrentUser:Root:MyThumbprint:MyCiphertext");
+         var result = serializer.Deserialize("Bitifier.RsaEncryption:1:CurrentUser:Root:MyThumbprint:MyCiphertext");
          
          Assert.AreEqual(StoreLocation.CurrentUser, result.StoreLocation);
          Assert.AreEqual(StoreName.Root, result.StoreName);
          Assert.AreEqual("MyThumbprint", result.Thumbprint);
          Assert.AreEqual("MyCiphertext", result.CipherText);
+      }
+
+      [Test]
+      public void IsSerializedCipherTextShouldReturnFalseForUnknownData()
+      {
+         var serializer = new CipherTextWithCertificateInfoSerializer();
+         var result = serializer.IsSerializedCipherText("A");
+
+         Assert.IsFalse(result);
+      }
+
+      [Test]
+      public void IsSerializedCipherTextShouldReturnTrueForUnknownData()
+      {
+         var serializer = new CipherTextWithCertificateInfoSerializer();
+         var result = serializer.IsSerializedCipherText("Bitifier.RsaEncryption:1:CurrentUser:Root:MyThumbprint:MyCiphertext");
+
+         Assert.IsTrue(result);
       }
    }
 

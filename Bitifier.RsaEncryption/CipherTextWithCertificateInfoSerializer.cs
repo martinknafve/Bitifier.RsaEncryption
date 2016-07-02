@@ -10,6 +10,8 @@ namespace Bitifier.RsaEncryption
 {
    public class CipherTextWithCertificateInfoSerializer
    {
+      private const string EncryptionIndicator = "Bitifier.RsaEncryption";
+
       public string Serialize(CipherTextWithCertificateInfo cipherTextWithCertificateInfo)
       {
          if (cipherTextWithCertificateInfo == null)
@@ -18,7 +20,7 @@ namespace Bitifier.RsaEncryption
          const string version = "1";
 
          return
-            $"{version}:{cipherTextWithCertificateInfo.StoreLocation}:{cipherTextWithCertificateInfo.StoreName}:{cipherTextWithCertificateInfo.Thumbprint}:{cipherTextWithCertificateInfo.CipherText}";
+            $"{EncryptionIndicator}:{version}:{cipherTextWithCertificateInfo.StoreLocation}:{cipherTextWithCertificateInfo.StoreName}:{cipherTextWithCertificateInfo.Thumbprint}:{cipherTextWithCertificateInfo.CipherText}";
       }
 
       public CipherTextWithCertificateInfo Deserialize(string serializedCipherTextWithCertificateInfo)
@@ -28,29 +30,51 @@ namespace Bitifier.RsaEncryption
          
          var values = serializedCipherTextWithCertificateInfo.Split(':');
 
-         if (values.Length != 5)
-            throw new ArgumentException("String cannot be parsed.", nameof(serializedCipherTextWithCertificateInfo));
+         if (values.Length != 6)
+         {
+            int segmentsFound = values.Length;
+            throw new ArgumentException($"String cannot be parsed. Expected 6 segments, found {segmentsFound}",
+               nameof(serializedCipherTextWithCertificateInfo));
+         }
 
-         var version = values[0];
+         var indicator = values[0];
+         if (indicator != EncryptionIndicator)
+            throw new ArgumentException("No indicator found.");
+
+         var version = values[1];
 
          if (version != "1")
             throw new ArgumentException($"The version {version} is not supported.", nameof(serializedCipherTextWithCertificateInfo));
 
          StoreLocation storeLocation;
-         if (!Enum.TryParse<StoreLocation>(values[1], out storeLocation))
-            throw new ArgumentException($"The store location {values[1]} is unknown.", nameof(serializedCipherTextWithCertificateInfo));
+         if (!Enum.TryParse<StoreLocation>(values[2], out storeLocation))
+            throw new ArgumentException($"The store location {values[2]} is unknown.", nameof(serializedCipherTextWithCertificateInfo));
 
          StoreName storeName;
-         if (!Enum.TryParse<StoreName>(values[2], out storeName))
-            throw new ArgumentException($"The store name {values[2]} is unknown", nameof(serializedCipherTextWithCertificateInfo));
+         if (!Enum.TryParse<StoreName>(values[3], out storeName))
+            throw new ArgumentException($"The store name {values[3]} is unknown", nameof(serializedCipherTextWithCertificateInfo));
 
          return new CipherTextWithCertificateInfo()
             {
                StoreLocation = storeLocation,
                StoreName = storeName,
-               Thumbprint = values[3],
-               CipherText = values[4]
+               Thumbprint = values[4],
+               CipherText = values[5]
             };
+      }
+
+      public bool IsSerializedCipherText(string serializedCipherTextWithCertificateInfo)
+      {
+         var values = serializedCipherTextWithCertificateInfo.Split(':');
+
+         if (values.Length != 6)
+            return false;
+
+         var indicator = values[0];
+         if (indicator != EncryptionIndicator)
+            return false;
+
+         return true;
       }
 
    }
