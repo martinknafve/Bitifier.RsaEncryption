@@ -20,6 +20,9 @@ namespace Bitifier.RsaEncryption
 
       public X509Certificate2ThumbprintCrypto(ICertificateStoreRepository certificateStoreRepository)
       {
+         if (certificateStoreRepository == null)
+            throw new ArgumentNullException(nameof(certificateStoreRepository));
+
          _certificateStoreRepository = certificateStoreRepository;
       }
 
