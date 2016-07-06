@@ -26,3 +26,13 @@ It uses the .NET-built-in `RSACryptoServiceProvider`, but provides the following
   var cipherText = encryption.Encrypt(certificate, "plaintext")
 ```
 
+## Bitifier.RsaEncryption.Console ##
+
+Bitifier.RsaEncryption.Console can be used to encrypt and decrypt text files. It takes the following parameters:
+
+* /inputFile - File to process
+* /outputFile - Output file
+* /thumbprint - The thumbprint of the certificate to use
+* /encrypt - Enables encryption
+* /decrpyt - Enables decryption
+* /overwrite - Enables overwriting of output file
