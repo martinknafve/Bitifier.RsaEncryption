@@ -74,14 +74,15 @@ namespace Bitifier.RsaEncryption.Console
          StoreLocation storeLocation = StoreLocation.CurrentUser;
          StoreName storeName = StoreName.My;
 
-         System.Console.WriteLine(@"Attempting to find certificate in <CurrentUser>\Personal\Certificates");
+         System.Console.WriteLine(@"Attempting to find certificate in <CurrentUser>\Personal\Certificates...");
+
          var certificateStore = new WindowsCertificateStoreRepository();
          var matchingCertificates = certificateStore.Find(storeLocation, storeName, thumbprint);
          var matchingCertificate = matchingCertificates.FirstOrDefault();
 
          if (matchingCertificate == null)
          {
-            System.Console.WriteLine(@"Attempting to find certificate in <LocalMachine>\Personal\Certificates");
+            System.Console.WriteLine(@"Attempting to find certificate in <LocalMachine>\Personal\Certificates...");
 
             storeLocation = StoreLocation.LocalMachine;
             storeName = StoreName.My;
@@ -92,8 +93,14 @@ namespace Bitifier.RsaEncryption.Console
 
          if (matchingCertificate == null)
          {
-            System.Console.WriteLine("Unable to find certificate with thumbprint {0}. Make sure it's imported into the Windows Certificate Store.", thumbprint);
+            System.Console.WriteLine(
+               "Unable to find certificate with thumbprint {0}. Make sure it's imported into the Windows Certificate Store.",
+               thumbprint);
             return -1;
+         }
+         else
+         {
+            System.Console.WriteLine("Certificate found.");
          }
 
       
@@ -113,6 +120,8 @@ namespace Bitifier.RsaEncryption.Console
 
             var serializedInfo = serializer.Serialize(cipherTextWithCertInfo);
             File.WriteAllText(outputFile, serializedInfo, Encoding.UTF8);
+
+            System.Console.WriteLine("Encryption completed.");
          }
          else
          {
@@ -121,6 +130,8 @@ namespace Bitifier.RsaEncryption.Console
             var plainText = crypto.Decrypt(cipherTextWithCertInfo);
 
             File.WriteAllText(outputFile, plainText, Encoding.UTF8);
+
+            System.Console.WriteLine("Decryption completed.");
          }
 
          return 0;
